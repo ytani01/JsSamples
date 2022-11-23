@@ -1,6 +1,16 @@
 //
 // Copyright (c) 2022 Yoichi Tanibayashi
 //
+//////////
+//
+// # Inheritance Tree (is-a relationship)
+//
+// BaseObj
+//   +- MoveableObj
+//        +- MoveableImage
+//             +- BallSample
+//
+//////////
 
 /**
  * Base class
@@ -162,7 +172,7 @@ class BaseObj {
 } // class BaseObj
 
 /**
- *
+ * 
  */
 class MoveableObj extends BaseObj {
     constructor(id, x, y) {
