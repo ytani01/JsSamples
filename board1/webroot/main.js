@@ -12,6 +12,11 @@
 ///////////////////////////////////////////
 
 /**
+ *
+ */
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+/**
  * Base class
  */
 class BaseObj {
@@ -171,7 +176,7 @@ class BaseObj {
         if ( ! this.grabbed ) {
             return false;
         }
-        console.log(`${this.id}> mouse_move(${x},${y})`);
+        //console.log(`${this.id}> mouse_move(${x},${y})`);
         return true;
     } // on_mouse_move_xy()
 
@@ -186,6 +191,14 @@ class BaseObj {
         this.el.style.left = `${this.x}px`;
         this.el.style.top = `${this.y}px`;
     } // move()
+
+    /**
+     * @param {number} sec
+     */
+    set_transition_duration(sec) {
+        this.el.style.transitionTimingFunction = "linear";
+        this.el.style.transitionDuration = sec + "s";
+    } // set_transition_duration()
 
     /**
      * @param {number} current msec
@@ -280,13 +293,16 @@ class BackgroundImage extends BaseObj {
 /**
  *
  */
-class Ball extends MoveableImage {
+class Item extends MoveableImage {
     /**
-     *
+     * @param {Board} board
+     * @param {string} id
      */
-    constructor(id) {
+    constructor(board, id) {
         super(id);
 
+        this.board = board;
+        
         this.content = undefined;
         this.set_content("null");
 
@@ -294,19 +310,12 @@ class Ball extends MoveableImage {
     } // constructor
 
     /**
-     *
+     * @param {string} content_key
      */
     set_content(content_key) {
         this.content = content_key;
         this.image_el.src = CONTENT[this.content];
     } // set_content();
-
-    /**
-     * @param {Box} box
-     */
-    put(box) {
-        this.box = box;
-    }
 
     /**
      * @param {number} x
@@ -327,7 +336,17 @@ class Ball extends MoveableImage {
      */
     on_mouse_up_xy(x, y) {
         super.on_mouse_up_xy(x, y);
-    }
+        const [col, row] = this.board.get_colrow(x, y);
+        const cur_box = this.box;
+        if ( col >= 0 && col < this.board.cols &&
+             row >= 0 && row < this.board.rows ) {
+            // exchange items
+            const dst_box = this.board.box[col][row];
+            this.board.exchange_items(this.box, dst_box);
+        } else {
+            cur_box.put_item(this);
+        }
+    } // on_mouse_up_xy()
 
     /**
      *
@@ -339,7 +358,7 @@ class Ball extends MoveableImage {
 
         this.move_center(x, y);
     }
-} // class Ball
+} // class Item
 
 /**
  *
@@ -348,27 +367,31 @@ class Box {
     /**
      * @param {number} col
      * @param {number} row
-     * @param {Ball} ball
+     * @param {Item} item
      */
-    constructor(board, col, row, ball) {
+    constructor(board, col, row, item) {
         this.board = board;
         this.col = col;
         this.row = row;
 
-        this.x = this.board.x + ball.w * this.col;
-        this.y = this.board.y + ball.h * this.row;
+        this.x = this.board.x + item.w * this.col + 1;
+        this.y = this.board.y + item.h * this.row + 1;
 
-        this.put_ball(ball);
+        if ( item ) {
+            this.put_item(item);
+        }
+
+        this.flag_remove = false;
     } // constructor
 
     /**
      *
      */
-    put_ball(ball) {
-        this.ball = ball;
-        this.ball.put(this);
-        this.ball.move(this.x, this.y);
-    } // put_ball()
+    put_item(item) {
+        this.item = item;
+        this.item.box = this;
+        this.item.move(this.x, this.y);
+    } // put_item()
 } // class Box
 
 /**
@@ -381,36 +404,237 @@ class Board extends MoveableImage {
     constructor(id, x, y) {
         super(id, x, y);
         
-        this.cols = 5;
-        this.rows = 5;
+        this.cols = 6;
+        this.rows = 6;
 
-        this.ball = [];
+        // items
+        this.item = [];
         for (let i=0; i < this.cols * this.rows; i++) {
-            // create a ball
-            const ball_id = `ball${i}`;
-            const ball = new Ball(ball_id);
+            // create a item
+            const item_id = `item${i}`;
+            const item = new Item(this, item_id);
 
-            // set ball content
+            // set item content
             const content_i = Math.floor(Math.random() * 3) + 1;
             const content_key = Object.keys(CONTENT)[content_i];
-            ball.set_content(content_key);
+            item.set_content(content_key);
 
-            // append ball to ball array
-            this.ball.push(ball);
+            // append item to item array
+            this.item.push(item);
         } // for(i)
 
-        let ball_i = 0;
+        // boxes
+        let item_i = 0;
         this.box = new Array(this.cols);
         for (let c=0; c < this.cols; c++) {
             this.box[c] = new Array(this.rows);
             for (let r=0; r < this.rows; r++) {
                 console.log(`[${c},${r}]`);
 
-                // create box and put a ball
-                this.box[c][r] = new Box(this, c, r, this.ball[ball_i++]);
+                // create box and put a item
+                this.box[c][r] = new Box(this, c, r, this.item[item_i++]);
             } // for(r)
         } // for(c)
     } // constructor
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
+    get_colrow(x, y) {
+        const col = Math.floor((x - this.x) / this.item[0].w);
+        const row = Math.floor((y - this.y) / this.item[0].h);
+        console.log(`(col,row)=(${col},${row})`);
+        return [col, row];
+    } // get_colrow()
+
+    /**
+     *
+     */
+    exchange_items(box1, box2) {
+        const item1 = box1.item;
+        const item2 = box2.item;
+
+        item1.set_z(100);
+        item2.set_z(100);
+
+        box1.put_item(item2);
+        box2.put_item(item1);
+
+        item1.set_z(1);
+        item2.set_z(1);
+
+        this.check_and_do_action();
+    } // exchange_items()
+
+    /**
+     *
+     */
+    check_and_do_action() {
+        while (this.check_remove(3)) {
+            this.do_remove();
+            this.clear_flag_remove();
+            
+            while (this.down_items()) {
+            }
+
+            while ( this.add_new_items() ) {
+                while (this.down_items()) {
+                }
+
+                /*
+                if ( this.check_remove(3) ) {
+                    this.do_remove();
+                    this.clear_flag_remove();
+                }
+                */
+            }
+        }
+    } // check_and_do_action()
+
+    /**
+     *
+     */
+    add_new_items() {
+        let flag_add = false;
+        for (let c=0; c < this.cols; c++) {
+            const box = this.box[c][0];
+            const content = box.item.content;
+            if ( content == "null" ) {
+                const content_i = Math.floor(Math.random() * 3) + 1;
+                const content1 = Object.keys(CONTENT)[content_i];
+                box.item.set_content(content1);
+                flag_add = true;
+                console.log(`(${c},0) ${content1}`);
+            }
+        } // for(c)
+        return flag_add;
+    } // add_new_items()
+
+    /**
+     *
+     */
+    down_items() {
+        let flag_down = false;
+        for (let r=this.rows-2; r >= 0; r--) {
+            const r1 = r + 1;
+            for (let c=0; c < this.cols; c++) {
+                const box1 = this.box[c][r];
+                if ( box1.item.content == "null" ) {
+                    continue;
+                }
+
+                const box2 = this.box[c][r1];
+                if ( box2.item.content == "null" ) {
+                    this.exchange_items(box1, box2);
+
+                    flag_down = true;
+                    console.log(`${c},${r}->${r1}`);
+                }
+            } // for(c)
+        } // for(r)
+        return flag_down;
+    } // down_items()
+
+    /**
+     *
+     */
+    clear_flag_remove() {
+        for (let r=0; r < this.rows; r++) {
+            for (let c=0; c < this.cols; c++) {
+                this.box[c][r].item.flag_remove = false;
+            } // for
+        } // for
+    } // clear_flag_remove()
+
+    /**
+     *
+     */
+    check_remove_right(col, row, n) {
+        const content0 = this.box[col][row].item.content;
+        if ( content0 == "null" ) {
+            return 0;
+        }
+        
+        // set `count`
+        let count = 0;
+        for (let c=col; c < this.cols; c++, count++) {
+            const content1 = this.box[c][row].item.content;
+            if ( content1 != content0 ) {
+                break;
+            }
+        } // for(c,i)
+
+        // set `flag_remove`
+        if ( count >= n ) {
+            for (let c=col, i=0; c < this.cols && i < count; c++, i++) {
+                this.box[c][row].item.flag_remove = true;
+            }
+        }
+        
+        return count;
+    } // check_remove_right()
+
+    /**
+     *
+     */
+    check_remove_down(col, row, n) {
+        const content0 = this.box[col][row].item.content;
+
+        if ( content0 == "null" ) {
+            return 0;
+        }
+
+        // set continuous `count`
+        let count = 0;
+        for (let r=row; r < this.rows; r++, count++) {
+            const content1 = this.box[col][r].item.content;
+            if ( content1 != content0 ) {
+                break;
+            }
+        } // for(c,i)
+
+        // set `item.flag_remove`
+        if ( count >= n ) {
+            for (let r=row, i=0; r < this.rows && i < count; r++, i++) {
+                this.box[col][r].item.flag_remove = true;
+            }
+        }
+        
+        return count;
+    } // check_remove_down()
+
+    /**
+     *
+     */
+    check_remove(n) {
+        let flag_remove = false;
+        // check all
+        for (let r=0; r < this.rows; r++) {
+            for (let c=0; c < this.cols; c++) {
+                if (this.check_remove_right(c, r, n) >= n) {
+                    flag_remove = true;
+                }
+                if (this.check_remove_down(c, r, n) >= n) {
+                    flag_remove = true;
+                }
+            } // for(c)
+        } // for(r)
+        return flag_remove;
+    } // check_remove()
+
+    /**
+     *
+     */
+    do_remove() {
+        for (let r=0; r < this.rows; r++) {
+            for (let c=0; c < this.cols; c++) {
+                if (this.box[c][r].item.flag_remove) {
+                    this.box[c][r].item.set_content("null");
+                }
+            } // for(c)
+        } // for(r)
+    } // do_remove()
 } // class Board
 
 ////////////////////
