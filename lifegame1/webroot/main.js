@@ -97,7 +97,7 @@ class BaseObj {
     /**
      * @param {string} id string
      */
-    constructor(id) {
+    constructor(id, update=false) {
         this.id = id;
         this.el = document.getElementById(this.id);
 
@@ -129,7 +129,9 @@ class BaseObj {
 
         this.grabbed = false;
         
-        UpdateObj.push(this);
+        if ( update ) {
+            UpdateObj.push(this);
+        }
     } // BaseObj.constructor()
      
     /**
@@ -261,6 +263,31 @@ class BaseObj {
 } // class BaseObj
 
 /**
+ *
+ */
+class BaseImage extends BaseObj {
+    /**
+     * @param {string} id
+     */
+    constructor(id, update=true) {
+        super(id, update);
+
+        this.image_el = this.el.children[0];
+        this.w = this.image_el.width;
+        this.h = this.image_el.height;
+        console.log(`id=${this.id}, [${this.x},${this.y}],${this.w}x${this.h},z=${this.z}`);
+    } // constructor
+
+    /**
+     *
+     */
+    set_img(img_path) {
+        this.image_el.src = img_path;
+    } // set_img()
+    
+} // class BaseImage
+
+/**
  * 
  */
 class MoveableObj extends BaseObj {
@@ -269,8 +296,8 @@ class MoveableObj extends BaseObj {
      * @param {number} x
      * @param {number} y
      */
-    constructor(id, x, y) {
-        super(id);
+    constructor(id, x, y, update=true) {
+        super(id, update);
 
         this.el.style.position = "absolute";
 
@@ -355,13 +382,12 @@ class MoveableObj extends BaseObj {
     } // update()
 } // class MoveableObj
 
-
 /**
  *
  */
 class MoveableImage extends MoveableObj {
-    constructor(id, x, y, center=false) {
-        super(id, x, y);
+    constructor(id, x, y, center=false, update=true) {
+        super(id, x, y, update);
         this.center = center;
 
         this.image_el = this.el.children[0];
@@ -374,6 +400,17 @@ class MoveableImage extends MoveableObj {
         }
     } // constructor
 
+    /**
+     *
+     */
+    set_img(img_path) {
+        this.image_el.src = img_path;
+    } // set_img()
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
     move_center(x, y) {
         const x1 = x - this.w / 2;
         const y1 = y - this.h / 2;
@@ -381,61 +418,187 @@ class MoveableImage extends MoveableObj {
     } // move_center()
 } // class MoveableImage
 
+const IMG = {
+    "empty": "./images/box1.png",
+    "life":  "./images/life1.png",
+    "new":   "./images/new1.png",
+    "death": "./images/death1.png"
+};
+
 /**
- * 
+ *
  */
-class Ball extends MoveableImage {
+class Box extends BaseImage {
+    constructor(id, stat='empty', update=false) {
+        super(id, update);
+
+        this.stat = stat;
+        this.set_stat(stat);
+        this.next_stat = undefined;
+    } // constructor
+
     /**
      *
      */
-    constructor (id, x, y) {
-        super(id, x, y, true);
+    set_stat(stat) {
+        this.stat = stat;
+        this.set_img(IMG[stat]);
+    } // set_stat()
+} // class Box
+
+/**
+ *
+ */
+class Field {
+    /**
+     *
+     */
+    constructor(cols, rows) {
+        this.box = [];
+        for (let c=0; c < Cols; c++) {
+            this.box[c] = [];
+            for (let r=0; r < Rows; r++) {
+                const id = `img-${c}-${r}`;
+                this.box[c][r] = new Box(id, "empty");
+            } // for(r)
+        } // for(c)
+
+        this.prev_msec = 0;
+        
+        this.set_random();
     } // constructor
+
+    /**
+     *
+     */
+    set_random() {
+        console.log(`${this.id}:set_random> `);
+        for (let r=0; r < Rows; r++) {
+            for (let c=0; c < Cols; c++) {
+                const id = `img-${c}-${r}`;
+                this.box[c][r].set_stat("empty");
+                if ( Math.random() < 0.5 ) {
+                    this.box[c][r].set_stat("new");
+                }
+            } // for(c)
+        } // for(r)
+    } // set_random()
+
+    /**
+     *
+     */
+    neibor_cr(c, r, d_c, d_r) {
+        c += d_c;
+        r += d_r;
+
+        if ( c < 0 ) {
+            c = Cols - 1;
+        }
+        if ( c > Cols - 1 ) {
+            c = 0;
+        }
+        if ( r < 0 ) {
+            r = Rows - 1;
+        }
+        if ( r > Rows - 1 ) {
+            r = 0;
+        }
+        return [c, r];
+    }
+
+    /**
+     *
+     */
+    set_next_stats() {
+        for (let r=0; r < Rows; r++) {
+            for (let c=0; c < Cols; c++) {
+                let count = 0;
+                for ( let d_r = -1; d_r <= 1; d_r++ ) {
+                    for ( let d_c = -1; d_c <= 1; d_c++ ) {
+                        const [c1, r1] = this.neibor_cr(c, r, d_c, d_r);
+                        if ( c1 == c && r1 == r) {
+                            continue;
+                        }
+                        if ( this.box[c1][r1].stat == "life" ||
+                             this.box[c1][r1].stat == "new" ) {
+                            count++;
+                        }
+                    } // for(d_c)
+                } // for(d_r)
+                console.log(`(${c},${r}): count=${count}`);
+
+                if ( this.box[c][r].stat == "life" ||
+                     this.box[c][r].stat == "new" ) {
+                    switch ( count ) {
+                        case 0:
+                        case 1:
+                            this.box[c][r].next_stat = "death";
+                            break;
+                        case 2:
+                        case 3:
+                            this.box[c][r].next_stat = "life";
+                            break;
+                        default:
+                            this.box[c][r].next_stat = "death";
+                            break;
+                    } // switch(count)
+                } else {
+                    this.box[c][r].next_stat = "empty";
+                    if ( count == 3 ) {
+                        this.box[c][r].next_stat = "new";
+                    }
+                }
+            } // for(c)
+        } // for(r)
+    } // set_next_stats()
+
+    /**
+     *
+     */
+    next_generation() {
+        this.set_next_stats();
+
+        for (let r=0; r < Rows; r++) {
+            for (let c=0; c < Cols; c++) {
+                this.box[c][r].set_stat(this.box[c][r].next_stat);
+            } // for(c)
+        } // for(r)
+    } // next_generation()
+
+    /**
+     *
+     */
+    update(cur_msec, cur_date_str) {
+        if (cur_msec - this.prev_msec >= 1000) {
+            this.next_generation();
+            this.prev_msec = cur_msec;
+        }
+    } // update()
+} // class Field
+
+/**
+ *
+ */
+class AAA extends BaseObj {
+    constructor(id, field) {
+        super(id);
+
+        this.field = field;
+    }
 
     /**
      *
      */
     on_mouse_down_xy(x, y) {
         super.on_mouse_down_xy(x, y);
-        this.move_center(x, y);
+
+        this.field.next_generation();
     } // on_mouse_down_xy()
+} // class AAA
 
-    /**
-     *
-     */
-    on_mouse_move_xy(x, y) {
-        super.on_mouse_move_xy(x, y);
-        if ( this.grabbed ) {
-            this.move_center(x, y);
-        }
-    } // on_mouse_move_xy()
 
-    /**
-     *
-     */
-    update(cur_msec, cur_date_str) {
-        super.update(cur_msec, cur_date_str);
-        
-        if ( this.grabbed ) {
-            this.move_center(MouseX, MouseY);
-            console.log(`${this.id}> MouseXY: (${MouseX}, ${MouseY})`);
-            return;
-        }
-
-        if ( this.x + this.w > document.body.scrollWidth && this.vx > 0) {
-            this.vx = -this.vx;
-        }
-        if ( this.x < 0 && this.vx < 0 ) {
-            this.vx = -this.vx;
-        }
-        if ( this.y + this.h > document.body.scrollHeight && this.vy > 0) {
-            this.vy = -this.vy;
-        }
-        if ( this.y < 0 && this.vy < 0 ) {
-            this.vy = -this.vy;
-        }
-    } // update()
-} // class Ball
+const Cols = 10;
+const Rows = 20;
 
 /**
  *
@@ -443,14 +606,12 @@ class Ball extends MoveableImage {
 window.onload = () => {
     console.log(`window.onload()> start`);
 
-    const text1 = new BaseObj("text1");
-    const text2 = new BaseObj("text2");
-    const ball1 = new Ball("img1", 100, 50);
-    ball1.start_move(1, 1);
-    const ball2 = new Ball("img2", 100, 100);
-    ball2.start_move(2, 1);
-    const ball3 = new Ball("img3", 200, 100);
-    ball3.start_move(3, 0.5);
+    const field = new Field(Cols, Rows);
+    UpdateObj.push(field);
     
+    const title = new AAA("title", field);
+    const aaa = new AAA("aaa", field);
+    const zzz = new AAA("zzz", field);
+
     setInterval(updateAll, UPDATE_INTERVAL_BASE);
 }; // window.onload
