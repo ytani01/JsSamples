@@ -23,6 +23,9 @@
 const UPDATE_INTERVAL_BASE = 33; // msec (30fps)
 let UpdateObj = [];
 
+/**
+ *
+ */
 const updateAll = () => {
     const cur_date = new Date();
     const [
@@ -34,6 +37,31 @@ const updateAll = () => {
         obj.update(cur_msec, cur_date_str);
     });
 }; // update_All()
+
+/**
+ * @param {Date} date
+ */
+const getDateInfo = (date) => {
+    const msec = date.getTime();
+
+    const yyyy_str = date.getFullYear().toString().padStart(4, '0');
+    const mm_str = (date.getMonth() + 1).toString().padStart(2, '0');
+    const dd_str = date.getDate().toString().padStart(2, '0');
+
+    const wday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const wday_str = wday[date.getDay()];
+
+    const HH_str = date.getHours().toString().padStart(2, '0');
+    const MM_str = date.getMinutes().toString().padStart(2, '0');
+    const SS_str = date.getSeconds().toString().padStart(2, '0');
+
+    const date_str = `${yyyy_str}/${mm_str}/${dd_str}(${wday_str}) ${HH_str}:${MM_str}:${SS_str}`;
+
+    return [
+        msec,
+        date_str
+    ];
+}; // getDateInfo()
 
 /**
  * Base class
@@ -191,6 +219,7 @@ class BaseObj {
      */
     on_mouse_move_xy(x, y) {
         // to be overridden
+        console.log(`${this.id}> mouse_move_xy(${x},${y})`);
     } // on_mouse_move_xy()
 
     /**
@@ -353,7 +382,10 @@ class Ball1 extends MoveableImage {
      * @param {number} y
      */
     on_mouse_move_xy(x, y) {
-        this.move_center(x, y);
+        super.on_mouse_move_xy(x, y);
+        if ( this.grabbed ) {
+            this.move_center(x, y);
+        }
     } // on_mouse_move_xy()
     
     /**
@@ -409,8 +441,11 @@ class Ball2 extends MoveableImage {
      *
      */
     on_mouse_move_xy(x, y) {
-        this.move_center(x, y);
-    }
+        super.on_mouse_move_xy(x, y);
+        if ( this.grabbed ) {
+            this.move_center(x, y);
+        }
+    } // on_mouse_move_xy()
 
     /**
      *
@@ -438,31 +473,6 @@ class Ball2 extends MoveableImage {
         }
     } // update()
 } // class Ball2
-
-/**
- * @param {Date} date
- */
-const getDateInfo = (date) => {
-    const msec = date.getTime();
-
-    const yyyy_str = date.getFullYear().toString().padStart(4, '0');
-    const mm_str = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dd_str = date.getDate().toString().padStart(2, '0');
-
-    const wday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const wday_str = wday[date.getDay()];
-
-    const HH_str = date.getHours().toString().padStart(2, '0');
-    const MM_str = date.getMinutes().toString().padStart(2, '0');
-    const SS_str = date.getSeconds().toString().padStart(2, '0');
-
-    const date_str = `${yyyy_str}/${mm_str}/${dd_str}(${wday_str}) ${HH_str}:${MM_str}:${SS_str}`;
-
-    return [
-        msec,
-        date_str
-    ];
-} // getDateInfo()
 
 /**
  *
