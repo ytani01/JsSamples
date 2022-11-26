@@ -4,16 +4,28 @@
 //////////
 //
 // # Inheritance Tree (is-a relationship)
+// |
+// +- BaseObj
+// |    |
+// |    +- BaseImage
+// |    |    |
+// |    |    +- Box
+// |    |
+// |    +- MoveableObj
+// |    |    |
+// |    |    +- MoveableImage
+// |    |
+// |    +- AAA
+// |    
+// +- Field
 //
-// BaseObj
-//   |
-//   +- MoveableObj
-//        |
-//        +- MoveableImage
-//             |
-//             +- Ball1
-//             |
-//             +- Ball
+// # has-a relationship
+// |
+// +- AAA
+//      |
+//      +- Field
+//           |
+//           +- Box
 //
 //////////
 
@@ -39,7 +51,8 @@ document.onpointerout = (e) => {
 /**
  * update
  */
-const UPDATE_INTERVAL_BASE = 33; // msec (30fps)
+//const UPDATE_INTERVAL_BASE = 33; // msec (30fps)
+const UPDATE_INTERVAL_BASE = 10; // msec
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -420,9 +433,9 @@ class MoveableImage extends MoveableObj {
 
 const IMG = {
     "empty": "./images/box1.png",
-    "life":  "./images/life1.png",
-    "new":   "./images/new1.png",
-    "death": "./images/death1.png"
+    "life":  "./images/life2.png",
+    "new":   "./images/new2.png",
+    "death": "./images/death2.png"
 };
 
 /**
@@ -445,6 +458,8 @@ class Box extends BaseImage {
         this.set_img(IMG[stat]);
     } // set_stat()
 } // class Box
+
+const UPDATE_INTERVAL_GENERATION = 2000;
 
 /**
  *
@@ -525,7 +540,7 @@ class Field {
                         }
                     } // for(d_c)
                 } // for(d_r)
-                console.log(`(${c},${r}): count=${count}`);
+                //console.log(`(${c},${r}): count=${count}`);
 
                 if ( this.box[c][r].stat == "life" ||
                      this.box[c][r].stat == "new" ) {
@@ -569,7 +584,7 @@ class Field {
      *
      */
     update(cur_msec, cur_date_str) {
-        if (cur_msec - this.prev_msec >= 1000) {
+        if (cur_msec - this.prev_msec >= UPDATE_INTERVAL_GENERATION) {
             this.next_generation();
             this.prev_msec = cur_msec;
         }
