@@ -15,13 +15,13 @@
 // |    |    |
 // |    |    +- MoveableImage
 // |    |
-// |    +- AAA
+// |    +- ButtonObj
 // |    
 // +- Field
 //
 // # has-a relationship
 // |
-// +- AAA
+// +- ButtonObj
 //      |
 //      +- Field
 //           |
@@ -114,6 +114,7 @@ class BaseObj {
     constructor(id, update=false) {
         this.id = id;
         this.el = document.getElementById(this.id);
+        console.log(`${this.id}: this.el=${this.el}`);
 
         const domRect = this.el.getBoundingClientRect();
         this.x = Math.floor(domRect.x);
@@ -506,6 +507,12 @@ class Field {
             } // for(r)
         } // for(c)
 
+        this.label_generation = new BaseObj("generation");
+        this.generation = 0;
+
+        this.label_life_count = new BaseObj("life-count");
+        this.life_count = 0;
+
         this.shift = "";
         this.prev_msec_shift = 0;
         
@@ -555,9 +562,168 @@ class Field {
      *
      */
     set_next_stats() {
+        let flag_generation_change = false;
+
+        this.life_count = 0;
         for (let r=0; r < Rows; r++) {
             for (let c=0; c < Cols; c++) {
+                //
+                // change animation
+                //
+                if ( this.box[c][r].stat == "new1" ) {
+                    this.box[c][r].next_stat = "new2";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death1" ) {
+                    this.box[c][r].next_stat = "death2";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life1" ) {
+                    this.box[c][r].next_stat = "life2";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty1" ) {
+                    this.box[c][r].next_stat = "empty2";
+                    continue;
+                }
 
+                if ( this.box[c][r].stat == "new2" ) {
+                    this.box[c][r].next_stat = "new3";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death2" ) {
+                    this.box[c][r].next_stat = "death3";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life2" ) {
+                    this.box[c][r].next_stat = "life3";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty2" ) {
+                    this.box[c][r].next_stat = "empty3";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new3" ) {
+                    this.box[c][r].next_stat = "new4";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death3" ) {
+                    this.box[c][r].next_stat = "death4";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life3" ) {
+                    this.box[c][r].next_stat = "life4";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty3" ) {
+                    this.box[c][r].next_stat = "empty4";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new4" ) {
+                    this.box[c][r].next_stat = "new5";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death4" ) {
+                    this.box[c][r].next_stat = "death5";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life4" ) {
+                    this.box[c][r].next_stat = "life5";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty4" ) {
+                    this.box[c][r].next_stat = "empty5";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new5" ) {
+                    this.box[c][r].next_stat = "new6";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death5" ) {
+                    this.box[c][r].next_stat = "death6";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life5" ) {
+                    this.box[c][r].next_stat = "life6";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty5" ) {
+                    this.box[c][r].next_stat = "empty6";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new6" ) {
+                    this.box[c][r].next_stat = "new7";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death6" ) {
+                    this.box[c][r].next_stat = "death7";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life6" ) {
+                    this.box[c][r].next_stat = "life7";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty6" ) {
+                    this.box[c][r].next_stat = "empty7";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new7" ) {
+                    this.box[c][r].next_stat = "life";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death7" ) {
+                    this.box[c][r].next_stat = "empty";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life7" ) {
+                    this.box[c][r].next_stat = "life";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty7" ) {
+                    this.box[c][r].next_stat = "empty";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new8" ) {
+                    this.box[c][r].next_stat = "life";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death8" ) {
+                    this.box[c][r].next_stat = "empty";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life8" ) {
+                    this.box[c][r].next_stat = "life";
+                    this.life_count++;
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty8" ) {
+                    this.box[c][r].next_stat = "empty";
+                    continue;
+                }
+
+                flag_generation_change = true;
+                
                 //
                 // count neibors
                 //
@@ -587,6 +753,7 @@ class Field {
                         case 2:
                         case 3:
                             this.box[c][r].next_stat = "life1";
+                            this.life_count++;
                             break;
                         default:
                             this.box[c][r].next_stat = "death1";
@@ -598,148 +765,18 @@ class Field {
                     this.box[c][r].next_stat = "empty1";
                     if ( count == 3 ) {
                         this.box[c][r].next_stat = "new1";
+                        this.life_count++;
                     }
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new1" ) {
-                    this.box[c][r].next_stat = "new2";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death1" ) {
-                    this.box[c][r].next_stat = "death2";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life1" ) {
-                    this.box[c][r].next_stat = "life2";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty1" ) {
-                    this.box[c][r].next_stat = "empty2";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new2" ) {
-                    this.box[c][r].next_stat = "new3";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death2" ) {
-                    this.box[c][r].next_stat = "death3";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life2" ) {
-                    this.box[c][r].next_stat = "life3";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty2" ) {
-                    this.box[c][r].next_stat = "empty3";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new3" ) {
-                    this.box[c][r].next_stat = "new4";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death3" ) {
-                    this.box[c][r].next_stat = "death4";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life3" ) {
-                    this.box[c][r].next_stat = "life4";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty3" ) {
-                    this.box[c][r].next_stat = "empty4";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new4" ) {
-                    this.box[c][r].next_stat = "new5";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death4" ) {
-                    this.box[c][r].next_stat = "death5";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life4" ) {
-                    this.box[c][r].next_stat = "life5";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty4" ) {
-                    this.box[c][r].next_stat = "empty5";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new5" ) {
-                    this.box[c][r].next_stat = "new6";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death5" ) {
-                    this.box[c][r].next_stat = "death6";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life5" ) {
-                    this.box[c][r].next_stat = "life6";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty5" ) {
-                    this.box[c][r].next_stat = "empty6";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new6" ) {
-                    this.box[c][r].next_stat = "new7";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death6" ) {
-                    this.box[c][r].next_stat = "death7";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life6" ) {
-                    this.box[c][r].next_stat = "life7";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty6" ) {
-                    this.box[c][r].next_stat = "empty7";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new7" ) {
-                    this.box[c][r].next_stat = "life";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death7" ) {
-                    this.box[c][r].next_stat = "empty";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life7" ) {
-                    this.box[c][r].next_stat = "life";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty7" ) {
-                    this.box[c][r].next_stat = "empty";
-                    continue;
-                }
-
-                if ( this.box[c][r].stat == "new8" ) {
-                    this.box[c][r].next_stat = "life";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "death8" ) {
-                    this.box[c][r].next_stat = "empty";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "life8" ) {
-                    this.box[c][r].next_stat = "life";
-                    continue;
-                }
-                if ( this.box[c][r].stat == "empty8" ) {
-                    this.box[c][r].next_stat = "empty";
                     continue;
                 }
 
             } // for(c)
         } // for(r)
+
+        if ( flag_generation_change ) {
+            this.generation++;
+            console.log(`generation=${this.generation}`);
+        }
     } // set_next_stats()
 
     /**
@@ -833,10 +870,14 @@ class Field {
             if ( this.shift == "down") {
                 this.shift_down();
             }
+
             this.prev_msec_shift = cur_msec;
         }
         if ( cur_msec - this.prev_msec_generation >= UPDATE_INTERVAL_GENERATION ) {
             this.next_generation();
+            this.label_generation.el.innerHTML = this.generation;
+            this.label_life_count.el.innerHTML = this.life_count;
+
             this.prev_msec_generation = cur_msec;
         }
     } // update()
@@ -845,7 +886,7 @@ class Field {
 /**
  *
  */
-class AAA extends BaseObj {
+class ButtonObj extends BaseObj {
     constructor(id, field) {
         super(id);
 
@@ -858,6 +899,8 @@ class AAA extends BaseObj {
     on_mouse_down_xy(x, y) {
         super.on_mouse_down_xy(x, y);
 
+        this.field.prev_msec_shift = 0;
+        
         if ( this.id == "button_left" ) {
             this.field.shift = "left";
         }
@@ -881,7 +924,7 @@ class AAA extends BaseObj {
 
         this.field.shift = "";
     }
-} // class AAA
+} // class ButtonObj
 
 
 //const Cols = 10;
@@ -896,10 +939,10 @@ window.onload = () => {
     const field = new Field(Cols, Rows);
     UpdateObj.push(field);
     
-    const button_left = new AAA("button_left", field);
-    const button_right = new AAA("button_right", field);
-    const button_up = new AAA("button_up", field);
-    const button_down = new AAA("button_down", field);
+    const button_left = new ButtonObj("button_left", field);
+    const button_right = new ButtonObj("button_right", field);
+    const button_up = new ButtonObj("button_up", field);
+    const button_down = new ButtonObj("button_down", field);
 
     setInterval(updateAll, UPDATE_INTERVAL_BASE);
 }; // window.onload
