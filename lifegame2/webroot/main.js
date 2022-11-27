@@ -33,7 +33,7 @@
  * update
  */
 const UPDATE_INTERVAL_BASE = 5; // msec
-const UPDATE_INTERVAL_GENERATION = 150;
+const UPDATE_INTERVAL_GENERATION = 100;
 const UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
@@ -458,10 +458,10 @@ const IMG = {
     "new6":   "./images/life1.png",
     "new7":   "./images/life1.png",
     "new8":   "./images/life1.png",
-    "death1": "./images/new4.png",
-    "death2": "./images/new3.png",
-    "death3": "./images/new2.png",
-    "death4": "./images/new1.png",
+    "death1": "./images/death1.png",
+    "death2": "./images/death2.png",
+    "death3": "./images/death3.png",
+    "death4": "./images/death4.png",
     "death5": "./images/box1.png",
     "death6": "./images/box1.png",
     "death7": "./images/box1.png",
