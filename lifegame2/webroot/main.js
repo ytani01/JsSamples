@@ -32,8 +32,8 @@
 /**
  * update
  */
-const UPDATE_INTERVAL_BASE = 10; // msec
-const UPDATE_INTERVAL_GENERATION = 100;
+const UPDATE_INTERVAL_BASE = 5; // msec
+const UPDATE_INTERVAL_GENERATION = 150;
 const UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
@@ -438,22 +438,34 @@ const IMG = {
     "empty3": "./images/box1.png",
     "empty4": "./images/box1.png",
     "empty5": "./images/box1.png",
+    "empty6": "./images/box1.png",
+    "empty7": "./images/box1.png",
+    "empty8": "./images/box1.png",
     "life":  "./images/life1.png",
     "life1":  "./images/life1.png",
     "life2":  "./images/life1.png",
     "life3":  "./images/life1.png",
     "life4":  "./images/life1.png",
     "life5":  "./images/life1.png",
+    "life6":  "./images/life1.png",
+    "life7":  "./images/life1.png",
+    "life8":  "./images/life1.png",
     "new1":   "./images/new1.png",
     "new2":   "./images/new2.png",
     "new3":   "./images/new3.png",
     "new4":   "./images/new4.png",
     "new5":   "./images/life1.png",
+    "new6":   "./images/life1.png",
+    "new7":   "./images/life1.png",
+    "new8":   "./images/life1.png",
     "death1": "./images/new4.png",
     "death2": "./images/new3.png",
     "death3": "./images/new2.png",
     "death4": "./images/new1.png",
-    "death5": "./images/box1.png"
+    "death5": "./images/box1.png",
+    "death6": "./images/box1.png",
+    "death7": "./images/box1.png",
+    "death8": "./images/box1.png"
 };
 
 /**
@@ -660,18 +672,69 @@ class Field {
                 }
 
                 if ( this.box[c][r].stat == "new5" ) {
-                    this.box[c][r].next_stat = "life";
+                    this.box[c][r].next_stat = "new6";
                     continue;
                 }
                 if ( this.box[c][r].stat == "death5" ) {
-                    this.box[c][r].next_stat = "empty";
+                    this.box[c][r].next_stat = "death6";
                     continue;
                 }
                 if ( this.box[c][r].stat == "life5" ) {
-                    this.box[c][r].next_stat = "life";
+                    this.box[c][r].next_stat = "life6";
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty5" ) {
+                    this.box[c][r].next_stat = "empty6";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new6" ) {
+                    this.box[c][r].next_stat = "new7";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death6" ) {
+                    this.box[c][r].next_stat = "death7";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life6" ) {
+                    this.box[c][r].next_stat = "life7";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty6" ) {
+                    this.box[c][r].next_stat = "empty7";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new7" ) {
+                    this.box[c][r].next_stat = "new8";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death7" ) {
+                    this.box[c][r].next_stat = "death8";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life7" ) {
+                    this.box[c][r].next_stat = "life8";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty7" ) {
+                    this.box[c][r].next_stat = "empty8";
+                    continue;
+                }
+
+                if ( this.box[c][r].stat == "new8" ) {
+                    this.box[c][r].next_stat = "life";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "death8" ) {
+                    this.box[c][r].next_stat = "empty";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "life8" ) {
+                    this.box[c][r].next_stat = "life";
+                    continue;
+                }
+                if ( this.box[c][r].stat == "empty8" ) {
                     this.box[c][r].next_stat = "empty";
                     continue;
                 }
