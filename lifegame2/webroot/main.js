@@ -128,7 +128,7 @@ class BaseObj {
         if ( ! this.z ) {
             this.set_z(1);
         }
-        console.log(`id=${this.id}, [${this.x},${this.y}], [${this.right}, ${this.bottom}], ${this.w}x${this.h}, z=${this.z}`);
+        //console.log(`id=${this.id}, [${this.x},${this.y}], [${this.right}, ${this.bottom}], ${this.w}x${this.h}, z=${this.z}`);
 
         this.el.onmousedown = this.on_mouse_down.bind(this);
         this.el.ontouchstart = this.on_mouse_down.bind(this);
@@ -288,7 +288,7 @@ class BaseImage extends BaseObj {
         this.image_el = this.el.children[0];
         this.w = this.image_el.width;
         this.h = this.image_el.height;
-        console.log(`id=${this.id}, [${this.x},${this.y}], ${this.w}x${this.h}, z=${this.z}`);
+        //console.log(`id=${this.id}, [${this.x},${this.y}], ${this.w}x${this.h}, z=${this.z}`);
     } // constructor
 
     /**
@@ -518,7 +518,6 @@ class Field {
      *
      */
     set_random() {
-        console.log(`Field:set_random> `);
         for (let r=0; r < Rows; r++) {
             for (let c=0; c < Cols; c++) {
                 const id = `img-${c}-${r}`;
@@ -897,7 +896,6 @@ window.onload = () => {
     const field = new Field(Cols, Rows);
     UpdateObj.push(field);
     
-    const title = new AAA("title", field);
     const button_left = new AAA("button_left", field);
     const button_right = new AAA("button_right", field);
     const button_up = new AAA("button_up", field);
