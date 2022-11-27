@@ -952,7 +952,7 @@ class IntervalButton extends BaseObj {
             }
         }
 
-        this.label.el.innerHTML = UPDATE_INTERVAL_GENERATION + " msec";
+        this.label.el.innerHTML = UPDATE_INTERVAL_GENERATION;
     }
 } // class IntervalButton
 
@@ -975,7 +975,7 @@ window.onload = () => {
     const button_down = new ShiftButton("button_down", field);
 
     const label_interval = new BaseObj("label_interval");
-    label_interval.el.innerHTML = UPDATE_INTERVAL_GENERATION + " msec";
+    label_interval.el.innerHTML = UPDATE_INTERVAL_GENERATION;
     const button_inc_interval = new IntervalButton("button_inc_interval",
                                                   label_interval);
     const button_dec_interval = new IntervalButton("button_dec_interval",
