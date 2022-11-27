@@ -33,8 +33,8 @@
  * update
  */
 const UPDATE_INTERVAL_BASE = 10; // msec
-const UPDATE_INTERVAL_GENERATION = 500;
-const UPDATE_INTERVAL_SHIFT = 100;
+const UPDATE_INTERVAL_GENERATION = 1000;
+const UPDATE_INTERVAL_SHIFT = 200;
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -479,7 +479,7 @@ class Field {
         this.shift = "";
         this.prev_msec_shift = 0;
         
-        this.prev_msec = 0;
+        this.prev_msec_generation = 0;
 
         this.set_random();
     } // constructor
@@ -658,10 +658,11 @@ class Field {
             if ( this.shift == "down") {
                 this.shift_down();
             }
+            this.prev_msec_shift = cur_msec;
         }
-        if ( cur_msec - this.prev_msec >= UPDATE_INTERVAL_GENERATION ) {
+        if ( cur_msec - this.prev_msec_generation >= UPDATE_INTERVAL_GENERATION ) {
             this.next_generation();
-            this.prev_msec = cur_msec;
+            this.prev_msec_generation = cur_msec;
         }
     } // update()
 } // class Field
