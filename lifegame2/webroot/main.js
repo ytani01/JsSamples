@@ -2,8 +2,9 @@
 // Copyright (c) 2022 Yoichi Tanibayashi
 //
 //////////
+
 //
-// # Inheritance Tree (is-a relationship)
+// # Class Inheritance Tree (is-a relationship)
 // |
 // +- BaseObj
 // |    |
@@ -11,32 +12,60 @@
 // |    |    |
 // |    |    +- Box
 // |    |
-// |    +- MoveableObj
-// |    |    |
-// |    |    +- MoveableImage
-// |    |
 // |    +- ShiftButton
+// |    |
+// |    +- IntervalButton
+// |    |
+// |    +- MoveableObj (not used)
+// |         |
+// |         +- MoveableImage (not used)
 // |    
 // +- Field
 //
-// # has-a relationship
+// # Objects has-a relationship
 // |
-// +- ShiftButton
+// +- ShiftButton (button_left, button_right, button_up, button_down)
+// |    |
+// |    +- Field (field)
+// |         |
+// |         +- Box
+// |
+// +- IntervalButton (button_inc_interval, button_dec_interval)
 //      |
-//      +- Field
-//           |
-//           +- Box
+//      +- BaseObj (label_interval)
 //
 //////////
+
+/**
+ * mouse
+ */
+let MouseX = undefined;
+let MouseY = undefined;
+let PrevMouseX = undefined;
+let PrevMouseY = undefined;
+
+document.onpointermove = (e) => {
+    MouseX = e.pageX;
+    MouseY = e.pageY;
+    console.log(`onpointermove> (${MouseX}, ${MouseY})`);
+};
+
+document.onpointerout = (e) => {
+    MouseX = MouseY = undefined;
+    console.log(`onpointerout> (${MouseX}, ${MouseY})`);
+};
 
 /**
  * update
  */
 let UPDATE_INTERVAL_BASE = 33; // msec
-let UPDATE_INTERVAL_GENERATION = 50;
+let UPDATE_INTERVAL_GENERATION = 150;
 let UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
+/**
+ *
+ */
 const updateAll = () => {
     const dMouseX = MouseX - PrevMouseX;
     const dMouseY = MouseY - PrevMouseY;
@@ -59,25 +88,6 @@ const updateAll = () => {
     PrevMouseX = MouseX;
     PrevMouseY = MouseY;
 }; // update_All()
-
-/**
- * mouse
- */
-let MouseX = undefined;
-let MouseY = undefined;
-let PrevMouseX = undefined;
-let PrevMouseY = undefined;
-
-document.onpointermove = (e) => {
-    MouseX = e.pageX;
-    MouseY = e.pageY;
-    console.log(`onpointermove> (${MouseX}, ${MouseY})`);
-};
-
-document.onpointerout = (e) => {
-    MouseX = MouseY = undefined;
-    console.log(`onpointerout> (${MouseX}, ${MouseY})`);
-};
 
 /**
  * @param {Date} date
@@ -789,7 +799,8 @@ class Field {
         } // for(r)
 
         console.log(`${this.constructor.name}:life_count=${this.life_count}`);
-        this.label_life_count.el.innerHTML = this.life_count;
+        this.label_life_count.el.innerHTML
+            = `${this.life_count} / ${Cols * Rows} (${Cols}x${Rows})`;
     } // next_generation()
 
     /**
