@@ -459,7 +459,7 @@ class Box extends BaseImage {
     } // set_stat()
 } // class Box
 
-const UPDATE_INTERVAL_GENERATION = 2000;
+const UPDATE_INTERVAL_GENERATION = 500;
 
 /**
  *
