@@ -15,13 +15,13 @@
 // |    |    |
 // |    |    +- MoveableImage
 // |    |
-// |    +- ButtonObj
+// |    +- ShiftButton
 // |    
 // +- Field
 //
 // # has-a relationship
 // |
-// +- ButtonObj
+// +- ShiftButton
 //      |
 //      +- Field
 //           |
@@ -32,9 +32,9 @@
 /**
  * update
  */
-const UPDATE_INTERVAL_BASE = 33; // msec
-const UPDATE_INTERVAL_GENERATION = 150;
-const UPDATE_INTERVAL_SHIFT = 150;
+let UPDATE_INTERVAL_BASE = 33; // msec
+let UPDATE_INTERVAL_GENERATION = 50;
+let UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -883,7 +883,7 @@ class Field {
 /**
  *
  */
-class ButtonObj extends BaseObj {
+class ShiftButton extends BaseObj {
     constructor(id, field) {
         super(id);
 
@@ -920,7 +920,41 @@ class ButtonObj extends BaseObj {
 
         this.field.shift = "";
     }
-} // class ButtonObj
+} // class ShiftButton
+
+
+/**
+ *
+ */
+class IntervalButton extends BaseObj {
+    /**
+     *
+     */
+    constructor(id, label) {
+        super(id);
+
+        this.label = label;
+    } // constructor
+
+    /**
+     *
+     */
+    on_mouse_down_xy(x, y) {
+        super.on_mouse_down_xy(x, y);
+
+        if ( this.id == "button_inc_interval" ) {
+            UPDATE_INTERVAL_GENERATION += 10;
+        }
+        if ( this.id == "button_dec_interval" ) {
+            UPDATE_INTERVAL_GENERATION -= 10;
+            if ( UPDATE_INTERVAL_GENERATION < 10 ) {
+                UPDATE_INTERVAL_GENERATION = 10;
+            }
+        }
+
+        this.label.el.innerHTML = UPDATE_INTERVAL_GENERATION + " msec";
+    }
+} // class IntervalButton
 
 
 //const Cols = 10;
@@ -935,10 +969,16 @@ window.onload = () => {
     const field = new Field(Cols, Rows);
     UpdateObj.push(field);
     
-    const button_left = new ButtonObj("button_left", field);
-    const button_right = new ButtonObj("button_right", field);
-    const button_up = new ButtonObj("button_up", field);
-    const button_down = new ButtonObj("button_down", field);
+    const button_left = new ShiftButton("button_left", field);
+    const button_right = new ShiftButton("button_right", field);
+    const button_up = new ShiftButton("button_up", field);
+    const button_down = new ShiftButton("button_down", field);
 
+    const label_interval = new BaseObj("label_interval");
+    label_interval.el.innerHTML = UPDATE_INTERVAL_GENERATION + " msec";
+    const button_inc_interval = new IntervalButton("button_inc_interval",
+                                                  label_interval);
+    const button_dec_interval = new IntervalButton("button_dec_interval",
+                                                  label_interval);
     setInterval(updateAll, UPDATE_INTERVAL_BASE);
 }; // window.onload
