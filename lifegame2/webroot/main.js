@@ -32,7 +32,7 @@
 /**
  * update
  */
-const UPDATE_INTERVAL_BASE = 30; // msec
+const UPDATE_INTERVAL_BASE = 33; // msec
 const UPDATE_INTERVAL_GENERATION = 200;
 const UPDATE_INTERVAL_SHIFT = 200;
 let UpdateObj = [];
