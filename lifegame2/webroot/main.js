@@ -33,8 +33,8 @@
  * update
  */
 const UPDATE_INTERVAL_BASE = 10; // msec
-const UPDATE_INTERVAL_GENERATION = 1000;
-const UPDATE_INTERVAL_SHIFT = 200;
+const UPDATE_INTERVAL_GENERATION = 500;
+const UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -528,6 +528,10 @@ class Field {
     set_next_stats() {
         for (let r=0; r < Rows; r++) {
             for (let c=0; c < Cols; c++) {
+
+                //
+                // count neibors
+                //
                 let count = 0;
                 for ( let d_r = -1; d_r <= 1; d_r++ ) {
                     for ( let d_c = -1; d_c <= 1; d_c++ ) {
@@ -543,6 +547,9 @@ class Field {
                 } // for(d_r)
                 //console.log(`(${c},${r}): count=${count}`);
 
+                //
+                // change stat
+                //
                 if ( this.box[c][r].stat == "life" ||
                      this.box[c][r].stat == "new" ) {
                     switch ( count ) {
