@@ -458,10 +458,10 @@ const IMG = {
     "new6":   "./images/life1.png",
     "new7":   "./images/life1.png",
     "new8":   "./images/life1.png",
-    "death1": "./images/death1.png",
-    "death2": "./images/death2.png",
-    "death3": "./images/death3.png",
-    "death4": "./images/death4.png",
+    "death1": "./images/new4.png",
+    "death2": "./images/new3.png",
+    "death3": "./images/new2.png",
+    "death4": "./images/new1.png",
     "death5": "./images/box1.png",
     "death6": "./images/box1.png",
     "death7": "./images/box1.png",
@@ -706,19 +706,19 @@ class Field {
                 }
 
                 if ( this.box[c][r].stat == "new7" ) {
-                    this.box[c][r].next_stat = "new8";
+                    this.box[c][r].next_stat = "life";
                     continue;
                 }
                 if ( this.box[c][r].stat == "death7" ) {
-                    this.box[c][r].next_stat = "death8";
+                    this.box[c][r].next_stat = "empty";
                     continue;
                 }
                 if ( this.box[c][r].stat == "life7" ) {
-                    this.box[c][r].next_stat = "life8";
+                    this.box[c][r].next_stat = "life";
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty7" ) {
-                    this.box[c][r].next_stat = "empty8";
+                    this.box[c][r].next_stat = "empty";
                     continue;
                 }
 
