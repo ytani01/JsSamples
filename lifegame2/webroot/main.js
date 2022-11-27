@@ -33,8 +33,8 @@
  * update
  */
 const UPDATE_INTERVAL_BASE = 33; // msec
-const UPDATE_INTERVAL_GENERATION = 200;
-const UPDATE_INTERVAL_SHIFT = 200;
+const UPDATE_INTERVAL_GENERATION = 150;
+const UPDATE_INTERVAL_SHIFT = 150;
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -488,6 +488,16 @@ class Box extends BaseImage {
         this.stat = stat;
         this.set_img(IMG[stat]);
     } // set_stat()
+
+    /**
+     *
+     */
+    is_alive() {
+        if ( this.stat.startsWith("life") || this.stat.startsWith("new") ) {
+            return true;
+        }
+        return false;
+    }
 } // class Box
 
 /**
@@ -564,7 +574,6 @@ class Field {
     set_next_stats() {
         let flag_generation_change = false;
 
-        this.life_count = 0;
         for (let r=0; r < Rows; r++) {
             for (let c=0; c < Cols; c++) {
                 //
@@ -572,7 +581,6 @@ class Field {
                 //
                 if ( this.box[c][r].stat == "new1" ) {
                     this.box[c][r].next_stat = "new2";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death1" ) {
@@ -581,7 +589,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life1" ) {
                     this.box[c][r].next_stat = "life2";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty1" ) {
@@ -591,7 +598,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new2" ) {
                     this.box[c][r].next_stat = "new3";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death2" ) {
@@ -600,7 +606,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life2" ) {
                     this.box[c][r].next_stat = "life3";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty2" ) {
@@ -610,7 +615,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new3" ) {
                     this.box[c][r].next_stat = "new4";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death3" ) {
@@ -619,7 +623,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life3" ) {
                     this.box[c][r].next_stat = "life4";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty3" ) {
@@ -629,7 +632,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new4" ) {
                     this.box[c][r].next_stat = "new5";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death4" ) {
@@ -638,7 +640,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life4" ) {
                     this.box[c][r].next_stat = "life5";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty4" ) {
@@ -648,7 +649,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new5" ) {
                     this.box[c][r].next_stat = "new6";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death5" ) {
@@ -657,7 +657,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life5" ) {
                     this.box[c][r].next_stat = "life6";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty5" ) {
@@ -667,7 +666,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new6" ) {
                     this.box[c][r].next_stat = "new7";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death6" ) {
@@ -676,7 +674,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life6" ) {
                     this.box[c][r].next_stat = "life7";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty6" ) {
@@ -686,7 +683,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new7" ) {
                     this.box[c][r].next_stat = "life";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death7" ) {
@@ -695,7 +691,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life7" ) {
                     this.box[c][r].next_stat = "life";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty7" ) {
@@ -705,7 +700,6 @@ class Field {
 
                 if ( this.box[c][r].stat == "new8" ) {
                     this.box[c][r].next_stat = "life";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "death8" ) {
@@ -714,7 +708,6 @@ class Field {
                 }
                 if ( this.box[c][r].stat == "life8" ) {
                     this.box[c][r].next_stat = "life";
-                    this.life_count++;
                     continue;
                 }
                 if ( this.box[c][r].stat == "empty8" ) {
@@ -753,7 +746,6 @@ class Field {
                         case 2:
                         case 3:
                             this.box[c][r].next_stat = "life1";
-                            this.life_count++;
                             break;
                         default:
                             this.box[c][r].next_stat = "death1";
@@ -765,7 +757,6 @@ class Field {
                     this.box[c][r].next_stat = "empty1";
                     if ( count == 3 ) {
                         this.box[c][r].next_stat = "new1";
-                        this.life_count++;
                     }
                     continue;
                 }
@@ -775,7 +766,8 @@ class Field {
 
         if ( flag_generation_change ) {
             this.generation++;
-            console.log(`generation=${this.generation}`);
+            this.label_generation.el.innerHTML = this.generation;
+            console.log(`${this.constructor.name}:generation=${this.generation}`);
         }
     } // set_next_stats()
 
@@ -785,12 +777,19 @@ class Field {
     next_generation() {
         this.set_next_stats();
 
+        this.life_count = 0;
         for (let r=0; r < Rows; r++) {
             for (let c=0; c < Cols; c++) {
-                this.box[c][r].set_stat(this.box[c][r].next_stat);
-                //console.log(`(${c},${r}) ${this.box[c][r].stat}`);
+                const box = this.box[c][r];
+                box.set_stat(box.next_stat);
+                if ( box.is_alive() ) {
+                    this.life_count++;
+                }
             } // for(c)
         } // for(r)
+
+        console.log(`${this.constructor.name}:life_count=${this.life_count}`);
+        this.label_life_count.el.innerHTML = this.life_count;
     } // next_generation()
 
     /**
@@ -849,8 +848,8 @@ class Field {
                     this.box[c][r].set_stat(this.box[c][r-1].stat);
                 }
                 this.box[c][0].set_stat(stat1);
-            }
-        }
+            } // for(c)
+        } // for(i)
     } // shift_down()
     
     /**
@@ -875,8 +874,6 @@ class Field {
         }
         if ( cur_msec - this.prev_msec_generation >= UPDATE_INTERVAL_GENERATION ) {
             this.next_generation();
-            this.label_generation.el.innerHTML = this.generation;
-            this.label_life_count.el.innerHTML = this.life_count;
 
             this.prev_msec_generation = cur_msec;
         }
@@ -913,7 +910,6 @@ class ButtonObj extends BaseObj {
         if ( this.id == "button_down" ) {
             this.field.shift = "down";
         }
-        //this.field.next_generation();
     } // on_mouse_down_xy()
 
     /**
