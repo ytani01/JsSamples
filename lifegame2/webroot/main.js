@@ -30,29 +30,11 @@
 //////////
 
 /**
- * mouse
- */
-let MouseX = undefined;
-let MouseY = undefined;
-let PrevMouseX = undefined;
-let PrevMouseY = undefined;
-
-document.onpointermove = (e) => {
-    MouseX = e.pageX;
-    MouseY = e.pageY;
-    console.log(`onpointermove> (${MouseX}, ${MouseY})`);
-};
-
-document.onpointerout = (e) => {
-    MouseX = MouseY = undefined;
-    console.log(`onpointerout> (${MouseX}, ${MouseY})`);
-};
-
-/**
  * update
  */
-//const UPDATE_INTERVAL_BASE = 33; // msec (30fps)
 const UPDATE_INTERVAL_BASE = 10; // msec
+const UPDATE_INTERVAL_GENERATION = 500;
+const UPDATE_INTERVAL_SHIFT = 100;
 let UpdateObj = [];
 
 const updateAll = () => {
@@ -77,6 +59,25 @@ const updateAll = () => {
     PrevMouseX = MouseX;
     PrevMouseY = MouseY;
 }; // update_All()
+
+/**
+ * mouse
+ */
+let MouseX = undefined;
+let MouseY = undefined;
+let PrevMouseX = undefined;
+let PrevMouseY = undefined;
+
+document.onpointermove = (e) => {
+    MouseX = e.pageX;
+    MouseY = e.pageY;
+    console.log(`onpointermove> (${MouseX}, ${MouseY})`);
+};
+
+document.onpointerout = (e) => {
+    MouseX = MouseY = undefined;
+    console.log(`onpointerout> (${MouseX}, ${MouseY})`);
+};
 
 /**
  * @param {Date} date
@@ -127,8 +128,7 @@ class BaseObj {
         if ( ! this.z ) {
             this.set_z(1);
         }
-        console.log(`id=${this.id}, [${this.x},${this.y}],[${this.right},${this.bottom}],${this.w}x${this.h},z=${this.z}`);
-        console.log(`innerHTML=${this.el.innerHTML}`);
+        console.log(`id=${this.id}, [${this.x},${this.y}], [${this.right}, ${this.bottom}], ${this.w}x${this.h}, z=${this.z}`);
 
         this.el.onmousedown = this.on_mouse_down.bind(this);
         this.el.ontouchstart = this.on_mouse_down.bind(this);
@@ -288,7 +288,7 @@ class BaseImage extends BaseObj {
         this.image_el = this.el.children[0];
         this.w = this.image_el.width;
         this.h = this.image_el.height;
-        console.log(`id=${this.id}, [${this.x},${this.y}],${this.w}x${this.h},z=${this.z}`);
+        console.log(`id=${this.id}, [${this.x},${this.y}], ${this.w}x${this.h}, z=${this.z}`);
     } // constructor
 
     /**
@@ -459,8 +459,6 @@ class Box extends BaseImage {
     } // set_stat()
 } // class Box
 
-const UPDATE_INTERVAL_GENERATION = 500;
-
 /**
  *
  */
@@ -478,8 +476,11 @@ class Field {
             } // for(r)
         } // for(c)
 
-        this.prev_msec = 0;
+        this.shift = "";
+        this.prev_msec_shift = 0;
         
+        this.prev_msec = 0;
+
         this.set_random();
     } // constructor
 
@@ -583,8 +584,82 @@ class Field {
     /**
      *
      */
+    shift_left(n=1) {
+        for (let i=0; i < n; i++) {
+            for (let r=0; r < Rows; r++) {
+                const stat1 = this.box[0][r].stat;
+                for (let c=0; c < Cols - 1; c++) {
+                    this.box[c][r].set_stat(this.box[c+1][r].stat);
+                }
+                this.box[Cols - 1][r].set_stat(stat1);
+            }
+        }
+    } // shift_left()
+
+    /**
+     *
+     */
+    shift_right(n=1) {
+        for (let i=0; i < n; i++) {
+            for (let r=0; r < Rows; r++) {
+                const stat1 = this.box[Cols - 1][r].stat;
+                for (let c=Cols - 1; c > 0; c--) {
+                    this.box[c][r].set_stat(this.box[c-1][r].stat);
+                }
+                this.box[0][r].set_stat(stat1);
+            }
+        }
+    } // shift_right()
+    
+    /**
+     *
+     */
+    shift_up(n=1) {
+        for (let i=0; i < n; i++) {
+            for (let c=0; c < Cols; c++) {
+                const stat1 = this.box[c][0].stat;
+                for (let r=0; r < Rows - 1; r++) {
+                    this.box[c][r].set_stat(this.box[c][r+1].stat);
+                }
+                this.box[c][Rows - 1].set_stat(stat1);
+            }
+        }
+    } // shift_up()
+    
+    /**
+     *
+     */
+    shift_down(n=1) {
+        for (let i=0; i < n; i++) {
+            for (let c=0; c < Cols; c++) {
+                const stat1 = this.box[c][Rows - 1].stat;
+                for (let r=Rows - 1; r > 0; r--) {
+                    this.box[c][r].set_stat(this.box[c][r-1].stat);
+                }
+                this.box[c][0].set_stat(stat1);
+            }
+        }
+    } // shift_down()
+    
+    /**
+     *
+     */
     update(cur_msec, cur_date_str) {
-        if (cur_msec - this.prev_msec >= UPDATE_INTERVAL_GENERATION) {
+        if ( cur_msec - this.prev_msec_shift >= UPDATE_INTERVAL_SHIFT ) {
+            if ( this.shift == "left") {
+                this.shift_left();
+            }
+            if ( this.shift == "right") {
+                this.shift_right();
+            }
+            if ( this.shift == "up") {
+                this.shift_up();
+            }
+            if ( this.shift == "down") {
+                this.shift_down();
+            }
+        }
+        if ( cur_msec - this.prev_msec >= UPDATE_INTERVAL_GENERATION ) {
             this.next_generation();
             this.prev_msec = cur_msec;
         }
@@ -607,8 +682,29 @@ class AAA extends BaseObj {
     on_mouse_down_xy(x, y) {
         super.on_mouse_down_xy(x, y);
 
-        this.field.next_generation();
+        if ( this.id == "button_left" ) {
+            this.field.shift = "left";
+        }
+        if ( this.id == "button_right" ) {
+            this.field.shift = "right";
+        }
+        if ( this.id == "button_up" ) {
+            this.field.shift = "up";
+        }
+        if ( this.id == "button_down" ) {
+            this.field.shift = "down";
+        }
+        //this.field.next_generation();
     } // on_mouse_down_xy()
+
+    /**
+     *
+     */
+    on_mouse_up_xy(x, y) {
+        super.on_mouse_up_xy(x, y);
+
+        this.field.shift = "";
+    }
 } // class AAA
 
 
@@ -625,8 +721,10 @@ window.onload = () => {
     UpdateObj.push(field);
     
     const title = new AAA("title", field);
-    const aaa = new AAA("aaa", field);
-    const zzz = new AAA("zzz", field);
+    const button_left = new AAA("button_left", field);
+    const button_right = new AAA("button_right", field);
+    const button_up = new AAA("button_up", field);
+    const button_down = new AAA("button_down", field);
 
     setInterval(updateAll, UPDATE_INTERVAL_BASE);
 }; // window.onload
