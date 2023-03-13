@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="jp">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1">
+    <script
+      src="https://kit.fontawesome.com/3f0ae112de.js"
+      crossorigin="anonymous"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous">
+    <script>
+      document.write(
+          '<link rel="stylesheet" href="main.css?'
+              + new Date().getTime() + '">'
+      );
+      </script>
+
+    <title>Timer</title>
+  </head>
+  <body>
+    <div class="container-fluid text-white bg-primary">
+      <!-- header -->
+      <div class="row bg-info">
+        <div class="col text-center">
+          <span class="fs-2">Timer</span>
+        </div> <!-- col -->
+      </div> <!-- row -->
+
+      <!-- main -->
+      <div class="row">
+        <div class="col">
+          残り時間: <span id="t_remain">0</span>
+        </div> <!-- col -->
+      </div> <!-- row -->
+
+      <div class="row">
+        <div class="col">
+          設定時間:
+          <select id="t_interval">
+            <option value="10">10秒</option>
+            <option value="30">30秒</option>
+            <option value="60">1分</option>
+            <option value="180">3分</option>
+          </select>
+        </div> <!-- col -->
+      </div> <!-- row -->
+
+      <div class="row">
+        <div class="col">
+          <button id="btn_start" type="button" onClick="start_timer();">
+            START</button>
+        </div> <!-- col -->
+      </div> <!-- row -->
+
+      <!-- footer -->
+      <div class="row bg-info fs-6">
+        <div class="col-5">
+          <div>
+            Version 0.0.1
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="text-end">
+            Copyright &copy 2022 Yoichi Tanibayashi
+          </div>
+        </div>
+      </div> <!-- row -->
+    </div><!-- container -->
+
+    <script>
+      document.write(
+          '<script src="main.js?' + new Date().getTime() + '"><\/script>'
+      );
+      </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+  </body>
+</html>
