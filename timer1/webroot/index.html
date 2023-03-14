@@ -35,14 +35,28 @@
       <!-- main -->
       <div class="row">
         <div class="col">
-          残り時間: <span id="t_remain">0</span>
+          残り時間: <span id="t_remain"> </span>
+        </div> <!-- col -->
+      </div> <!-- row -->
+
+      <div class="row">
+        <div class="col">
+          <img class="clock_img" src="img/clock_base.png">
+
+          <img id="clock_hand1" class="clock_img clock_hand"
+               src="img/clock_hand1.png"
+               style="left: -180px; top: -75px">
+
+          <img id="clock_hand2" class="clock_img clock_hand"
+               src="img/clock_hand2.png"
+               style="left: -237px; top: -50px">
         </div> <!-- col -->
       </div> <!-- row -->
 
       <div class="row">
         <div class="col">
           設定時間:
-          <select id="t_interval">
+          <select id="t_limit">
             <option value="10">10秒</option>
             <option value="30">30秒</option>
             <option value="60">1分</option>

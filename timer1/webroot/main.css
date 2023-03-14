@@ -1,0 +1,7 @@
+.clock_img {
+    position: relative;
+}
+
+.clock_hand {
+    transform-origin: bottom;
+}
